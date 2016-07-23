@@ -14,77 +14,56 @@
 (function() {
     'use strict';
 
-    setupAnimations(20000);
+    $(document).ready(function() {
+      var html = '<style type="text/css">' + 
+                  '.dashboardStrip{ z-index: 9999; background-color: red; height: 1.5em; width: 100%; position: fixed; top: 0; left: 0; }' + 
+                  '.timer{ height: 100%; width: 25%; float: right; }</style>' + 
+                  '<div class="dashboardStrip"><div class="timer">foooooooo</div></div>';
+      
+      $('body').prepend(html);
+    });
     
-    setupRedirect(5000);
+    scheduleRedirect(5000);
 
-
-    function setupRedirect(redirMillis) {
+    function scheduleRedirect(redirMillis) {
       $.ajax({
           url: 'https://dev17733.service-now.com/api/now/table/x_67288_dashboard_sites',
           dataType: "json",
           beforeSend: function(xhr) { xhr.setRequestHeader('Authorization', 'Basic ' + btoa('admin:DfHjaedhfWpMJ2Ueh8zM')); },
           success: function(data, status, xhr) { 
-            setTimeout(function() { 
-                var currentUrl = location.href;
-                var newUrl = getNextSite(currentUrl, data.result);
-                location.href = newUrl;
-            }, redirMillis);
+            var results = data.result;
+            setTimeout(function() { doRedirect(results); }, redirMillis);
           },
       });
     }
 
+    function doRedirect(results) {
+        var currentUrl = location.href;
+        var newUrl = getNextSite(currentUrl, results);
+        location.href = newUrl;
+    }
 
-    function setupAnimations(animMillis) {
+    animateScrolling(20000);    
+
+    function animateScrolling(animMillis) {
         $("html, body").animate({
             scrollTop: $(document).height()
         }, animMillis);
-
-        setTimeout(function() {
-            $('html, body').animate({
-                scrollTop: 0
-            }, animMillis);
-        }, animMillis);
-
-        setInterval(function() {
-
-            // 4000 - it will take 4 secound in total from the top of the page to the bottom
-            $("html, body").animate({
-                scrollTop: $(document).height()
-            }, animMillis);
-
-            setTimeout(function() {
-                $('html, body').animate({
-                    scrollTop: 0
-                }, animMillis);
-            }, animMillis);
-
-        }, animMillis);
     }
-
-
-    // function redirect() {
-    //     var currentUrl = location.href;
-    //     var newUrl = getNextSite(currentUrl, resultsDoc.results);
-    //     console.log("Current: " + currentUrl);
-    //     console.log("New: " + newUrl);
-    //     location.href = newUrl;
-    // }
 
     function getNextSite(siteUrl, sites) {
         // Find index of siteUrl
-        var matchedIdx = "";
-        console.log(sites);
+        var matchedIdx = null;
+
+        //console.log(sites);
 
         for (var idx in sites) {
             if (sites[idx].url === siteUrl) {
-                console.log("idx " + idx);
-                console.log("sitesidx " + sites[idx].url);
                 matchedIdx = parseInt(idx);
             }
         }
 
-        if (matchedIdx === null || matchedIdx === undefined || matchedIdx === "") {
+        if (matchedIdx === null) {
             alert("oh shit");
             return "http://google.com";
         }
@@ -95,5 +74,6 @@
             return sites[0].url;
         }
     }
+
 
 })();
