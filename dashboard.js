@@ -12,68 +12,88 @@
 // ==/UserScript==
 
 (function() {
-
     'use strict';
-    var api_url = 'https://dev17733.service-now.com/api/now/table/x_67288_dashboard_sites';
 
-    var sites = "";
-    $.ajax({
-      dataType: "json",
-      url: api_url,
-      async: false,
-      success: function(data, status, xhr) { sites = data; },
-      beforeSend: function(xhr){xhr.setRequestHeader('Authorization', 'Basic ' + btoa('admin:DfHjaedhfWpMJ2Ueh8zM'));}, 
-    });
-
-    console.log(sites);
+    setupAnimations(20000);
     
-    //run instantly and then goes after (setTimeout interval)
-  $("html, body").animate({ scrollTop: $(document).height() }, 20000);
+    setupRedirect(5000);
 
-  setTimeout(function() {
-     $('html, body').animate({scrollTop:0}, 20000);
-  },20000);
 
-  setInterval(function(){
-    // 4000 - it will take 4 secound in total from the top of the page to the bottom
-    $("html, body").animate({ scrollTop: $(document).height() }, 20000);
-    setTimeout(function() {
-      $('html, body').animate({scrollTop:0}, 20000);
-    },20000);
-  },20000);
+    function setupRedirect(redirMillis) {
+      $.ajax({
+          url: 'https://dev17733.service-now.com/api/now/table/x_67288_dashboard_sites',
+          dataType: "json",
+          beforeSend: function(xhr) { xhr.setRequestHeader('Authorization', 'Basic ' + btoa('admin:DfHjaedhfWpMJ2Ueh8zM')); },
+          success: function(data, status, xhr) { 
+            setTimeout(function() { 
+                var currentUrl = location.href;
+                var newUrl = getNextSite(currentUrl, data.result);
+                location.href = newUrl;
+            }, redirMillis);
+          },
+      });
+    }
 
-  setTimeout(redirect, 5000);
 
-  function redirect() {
-    var currentUrl = location.href;
-    var newUrl = getNextSite(currentUrl);
-      console.log(currentUrl);
-      console.log(newUrl);
-    location.href = newUrl;
-  }
+    function setupAnimations(animMillis) {
+        $("html, body").animate({
+            scrollTop: $(document).height()
+        }, animMillis);
 
-    function getNextSite(siteUrl) {
+        setTimeout(function() {
+            $('html, body').animate({
+                scrollTop: 0
+            }, animMillis);
+        }, animMillis);
+
+        setInterval(function() {
+
+            // 4000 - it will take 4 secound in total from the top of the page to the bottom
+            $("html, body").animate({
+                scrollTop: $(document).height()
+            }, animMillis);
+
+            setTimeout(function() {
+                $('html, body').animate({
+                    scrollTop: 0
+                }, animMillis);
+            }, animMillis);
+
+        }, animMillis);
+    }
+
+
+    // function redirect() {
+    //     var currentUrl = location.href;
+    //     var newUrl = getNextSite(currentUrl, resultsDoc.results);
+    //     console.log("Current: " + currentUrl);
+    //     console.log("New: " + newUrl);
+    //     location.href = newUrl;
+    // }
+
+    function getNextSite(siteUrl, sites) {
         // Find index of siteUrl
-        var matchedIdx = null;
+        var matchedIdx = "";
+        console.log(sites);
 
-        for (var idx in sites.result) {
-            console.log("idx " + idx);
-            console.log("sitesidx " + sites.result[idx].url);
-            if (sites.result[idx].url === siteUrl) {
-                alert("woo!");
-                matchedIdx = idx;
+        for (var idx in sites) {
+            if (sites[idx].url === siteUrl) {
+                console.log("idx " + idx);
+                console.log("sitesidx " + sites[idx].url);
+                matchedIdx = parseInt(idx);
             }
         }
 
-        if (matchedIdx === null | matchedIdx === undefined) {
+        if (matchedIdx === null || matchedIdx === undefined || matchedIdx === "") {
             alert("oh shit");
-        } else if (matchedIdx+1 < sites.result.length) {
-            return sites.result[matchedIdx+1].url;
+            return "http://google.com";
+        }
+
+        if (matchedIdx + 1 < sites.length) {
+            return sites[matchedIdx + 1].url;
         } else {
-            console.log(sites.result[0]);
-            return sites.result[0].url;
+            return sites[0].url;
         }
     }
-
 
 })();
