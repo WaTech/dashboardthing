@@ -2,13 +2,14 @@
     'use strict';
     
     $(document).ready(function() {
-        $(document).bind('keydown', 'ctrl+c', runScript);
+        $(document).bind('keypress', '`', runScript);
     });
     
     function runScript() {
         addBanner();
-
-        var count=30;
+//alert("HI");
+console.log("hi");
+        var count=5;
         var counter=setInterval(timer, 1000); //1000 will  run it every 1 second
         function timer() {
           count=count-1;
@@ -41,12 +42,14 @@
           // beforeSend: function(xhr) { xhr.setRequestHeader('Authorization', 'Basic ' + btoa('admin:DfHjaedhfWpMJ2Ueh8zM')); },
           success: function(data, status, xhr) { 
             // var results = data.result;
+            //alert(dump(data));
             setTimeout(function() { doRedirect(data); }, redirMillis);
           },
       });
     }
 
     function doRedirect(results) {
+      alert("redirecting to " + results);
         var currentUrl = location.href;
         var newUrl = getNextSite(currentUrl, results);
         if (location.href != newUrl) {
