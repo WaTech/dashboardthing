@@ -41,15 +41,15 @@ console.log("hi");
           dataType: "json",
           // beforeSend: function(xhr) { xhr.setRequestHeader('Authorization', 'Basic ' + btoa('admin:DfHjaedhfWpMJ2Ueh8zM')); },
           success: function(data, status, xhr) { 
-            // var results = data.result;
+            //var results = data.result;
             //alert(dump(data));
-            setTimeout(function() { doRedirect(data); }, redirMillis);
+            setTimeout(function() { doRedirect(data.result); }, redirMillis);
           },
       });
     }
 
     function doRedirect(results) {
-      alert("redirecting to " + results);
+      console.log("redirecting from" + location.href + " to " + getNextSite(currentUrl, results));
         var currentUrl = location.href;
         var newUrl = getNextSite(currentUrl, results);
         if (location.href != newUrl) {
