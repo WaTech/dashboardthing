@@ -35,19 +35,15 @@
     }
 
     function scheduleRedirect(redirMillis) {
-        $.ajax({
-            url: 'https://watech.service-now.com/api/now/table/x_ocios_egovdash_sites',
-            dataType: "json",
-            beforeSend: function(xhr) { 
-                xhr.setRequestHeader('Authorization', 'Basic ' + btoa('justinb:b9h^hh@tEzX@')); 
-            },
-            success: function(data, status, xhr) { 
-                var results = data.result;
-                setTimeout(function() { 
-                    doRedirect(results); 
-                }, redirMillis);
-            },
-        });
+      $.ajax({
+          url: 'https://watech.service-now.com/api/x_ocios_egovdash/dashboard_sites',
+          dataType: "json",
+          // beforeSend: function(xhr) { xhr.setRequestHeader('Authorization', 'Basic ' + btoa('admin:DfHjaedhfWpMJ2Ueh8zM')); },
+          success: function(data, status, xhr) { 
+            // var results = data.result;
+            setTimeout(function() { doRedirect(data); }, redirMillis);
+          },
+      });
     }
 
     function doRedirect(results) {
