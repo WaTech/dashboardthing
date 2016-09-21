@@ -1,0 +1,13 @@
+// ==UserScript==
+// @name Big Dashboard Thing
+// @namespace http://egov.watech.wa.gov
+// @version 0.1
+// @description try to take over the giant TV!
+// @author alexiasa
+// @match      *://*/*
+// @require http://code.jquery.com/jquery-latest.js
+// @require file:///Users/justinb/jquery.hotkeys.js
+// @require file:///Users/justinb/Developer/git/dashboardthing/dashboard.js
+// @grant GM_setValue
+// @grant GM_getValue
+// ==/UserScript==
