@@ -1,14 +1,20 @@
 (function() {
     'use strict';
-    
+
+
     $(document).ready(function() {
-        $(document).bind('keyup', '`', runScript);
+        $(document).bind('keyup', '`', processKeystroke);
+        doIfRunning(startDashboard);
     });
-    
-    function runScript() {
+
+    function processKeystroke() {
+      doIfRunning(stopDashboard, startDashboard);
+    }
+
+    function startDashboard() {
+        setTabValue("isRunning", true);
+
         addBanner();
-//alert("HI");
-console.log("hi");
         var count=5;
         var counter=setInterval(timer, 1000); //1000 will  run it every 1 second
         function timer() {
@@ -24,6 +30,15 @@ console.log("hi");
         animateScrolling(20000);    
     }
 
+    function stopDashboard() {
+      doIfRunning(function() {
+        setTabValue("isRunning", false);
+      });
+    }
+
+
+//==========================================================================================
+
     function addBanner() {
         var html = '<style type="text/css">' + 
                       '.dashboardStrip{ z-index: 9999; background-color: red; height: 1.5em; width: 100%; position: fixed; top: 0; left: 0; }' + 
@@ -34,6 +49,16 @@ console.log("hi");
                     '</div>';
         $('body').prepend(html);
     }
+
+
+    function animateScrolling(animMillis) {
+        $("html, body").animate({
+            scrollTop: $(document).height()
+        }, animMillis);
+    }
+
+//==========================================================================================
+
 
     function scheduleRedirect(redirMillis) {
       $.ajax({
@@ -57,12 +82,6 @@ console.log("hi");
         }
     }
     
-    function animateScrolling(animMillis) {
-        $("html, body").animate({
-            scrollTop: $(document).height()
-        }, animMillis);
-    }
-
     function getNextSite(siteUrl, sites) {
         // Find index of siteUrl
         var matchedIdx = null;
@@ -73,7 +92,7 @@ console.log("hi");
         }
 
         if (matchedIdx === null) {
-            return location.href;
+            return sites[0].url; //location.href;
         } 
 
         if (matchedIdx + 1 < sites.length) {
@@ -83,5 +102,26 @@ console.log("hi");
         return sites[0].url;
     }
 
+//==========================================================================================
+
+    function doIfRunning(funcToRun, otherFuncToRun) {
+      GM_getTab(function (tabData) {
+        if(tabData.isRunning) {
+          if (typeof funcToRun === "function") { funcToRun(); }
+        } else {
+          if (typeof otherFuncToRun === "function") { otherFuncToRun(); }
+        }
+      });
+    }
+
+    function setTabValue(key, value) {
+        GM_getTab(function (tabData) {
+            tabData[key] = value;
+            GM_saveTab(tabData);
+            console.info(tabData);
+        });      
+    }
+
+//==========================================================================================
 
 })();
