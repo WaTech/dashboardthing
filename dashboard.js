@@ -2,7 +2,7 @@
     'use strict';
     
     $(document).ready(function() {
-        $(document).bind('keypress', '`', runScript);
+        $(document).bind('keyup', '=', runScript);
     });
     
     function runScript() {
