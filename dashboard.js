@@ -30,7 +30,7 @@
         }
 
        // scheduleRedirect(10000);
-        animateScrolling(5000);    
+        animateScrolling(40000);    
     }
 
     function stopDashboard() {
