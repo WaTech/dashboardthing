@@ -29,8 +29,8 @@
           document.getElementById("timer").innerHTML = count + " secs"; // watch for spelling
         }
 
-        scheduleRedirect(10000);
-        animateScrolling(40000);    
+       // scheduleRedirect(10000);
+        animateScrolling(5000);    
     }
 
     function stopDashboard() {
@@ -55,9 +55,10 @@
 
 
     function animateScrolling(animMillis) {
-        $("html, body").not('iframe html, iframe body').animate({
-            scrollTop: $(document).height()
-        }, animMillis);
+        $("html, body").not('iframe html, iframe body').animate(
+          { scrollTop: $(document).height() }, 
+          { duration: animMillis, done: function() { scheduleRedirect(0); } }
+        );
     }
 
 //==========================================================================================
