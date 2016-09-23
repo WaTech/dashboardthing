@@ -1,5 +1,8 @@
 (function() {
     'use strict';
+    if (window.top !== window.self) {
+      return;
+    }
 
 
     $(document).ready(function() {
@@ -41,18 +44,18 @@
 
     function addBanner() {
         var html = '<style type="text/css">' + 
-                      '.dashboardStrip{ z-index: 9999; background-color: red; height: 1.5em; width: 100%; position: fixed; top: 0; left: 0; }' + 
-                      '.timer{ height: 100%; width: 25%; float: right; }' +
+                      '.dashboardStrip{ z-index: 9999; background-color: gray; height: 1.5em; width: 100%; position: fixed; top: 0; left: 0; color: white; }' + 
+                      '.timer{ height: 100%; width: 25%; float: right; color: white; }' +
                     '</style>' + 
-                    '<div class="dashboardStrip">' + 
-                      '<div id="timer"></div>' +
+                    '<div class="dashboardStrip"> To disable/enable the dashboard, press the ` or ~ key ONCE' + 
+                      //'<div id="timer" class="timer"></div>' +
                     '</div>';
-        $('body').prepend(html);
+        $('body').first().append(html);
     }
 
 
     function animateScrolling(animMillis) {
-        $("html, body").animate({
+        $("html, body").not('iframe html, iframe body').animate({
             scrollTop: $(document).height()
         }, animMillis);
     }
