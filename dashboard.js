@@ -18,7 +18,7 @@
         setTabValue("isRunning", true);
 
         addBanner();
-        var count=5;
+        var count=10;
         var counter=setInterval(timer, 1000); //1000 will  run it every 1 second
         function timer() {
           count=count-1;
@@ -29,8 +29,8 @@
           document.getElementById("timer").innerHTML = count + " secs"; // watch for spelling
         }
 
-        scheduleRedirect(5000);
-        animateScrolling(20000);    
+        scheduleRedirect(10000);
+        animateScrolling(40000);    
     }
 
     function stopDashboard() {
