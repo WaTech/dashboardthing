@@ -16,25 +16,26 @@
 
     function startDashboard() {
         setTabValue("isRunning", true);
-
         addBanner();
-        var count=10;
-        var counter=setInterval(timer, 1000); //1000 will  run it every 1 second
-        function timer() {
-          count=count-1;
-          if (count <= 0) {
-             clearInterval(counter);
-             return;
-          }
-          document.getElementById("timer").innerHTML = count + " secs"; // watch for spelling
-        }
 
-       // scheduleRedirect(10000);
+        //var count=10;
+        //var counter=setInterval(timer, 1000); //1000 will  run it every 1 second
+        //function timer() {
+        //  count=count-1;
+        //  if (count <= 0) {
+        //     clearInterval(counter);
+        //     return;
+        //  }
+        //  //document.getElementById("timer").innerHTML = count + " secs"; // watch for spelling
+        //}
+        // scheduleRedirect(10000);
+
         animateScrolling(40000);    
     }
 
     function stopDashboard() {
       doIfRunning(function() {
+        $("html, body").stop(true, false);
         setTabValue("isRunning", false);
       });
     }
@@ -48,7 +49,7 @@
                       '.timer{ height: 100%; width: 25%; float: right; color: white; }' +
                     '</style>' + 
                     '<div class="dashboardStrip"> To disable/enable the dashboard, press the ` or ~ key ONCE' + 
-                      //'<div id="timer" class="timer"></div>' +
+                    //'<div id="timer" class="timer"></div>' +
                     '</div>';
         $('body').first().append(html);
     }
@@ -56,7 +57,7 @@
 
     function animateScrolling(animMillis) {
         $("html, body").not('iframe html, iframe body').animate(
-          { scrollTop: $(document).height() }, 
+          { scrollTop: $(document).height() - window.innerHeight }, 
           { duration: animMillis, done: function() { scheduleRedirect(0); } }
         );
     }
@@ -65,17 +66,37 @@
 
 
     function scheduleRedirect(redirMillis) {
-      $.ajax({
-          url: 'https://watech.service-now.com/api/x_ocios_egovdash/dashboard_sites',
-          dataType: "json",
-          // beforeSend: function(xhr) { xhr.setRequestHeader('Authorization', 'Basic ' + btoa('admin:DfHjaedhfWpMJ2Ueh8zM')); },
-          success: function(data, status, xhr) { 
-            //var results = data.result;
-            //alert(dump(data));
-            setTimeout(function() { doRedirect(data.result); }, redirMillis);
-          },
+      // check to see if we have data.result stored for this tab
+      // if we do, schedule redirect with it.
+      // otherwise, make an ajax call to schedule the redirect
+
+      var cachedResult =  null;
+
+      GM_getTab(function (tabData) {
+        var results = tabData.results;
+        if(results !== null && results !== undefined) {
+            console.log ("got cached data");
+            doRedirect(tabData.results);
+        } else {
+            console.log ("had to fetch data");
+            $.ajax({
+              url: 'https://watech.service-now.com/api/x_ocios_egovdash/dashboard_sites',
+              dataType: "json",
+              // beforeSend: function(xhr) { xhr.setRequestHeader('Authorization', 'Basic ' + btoa('admin:DfHjaedhfWpMJ2Ueh8zM')); },
+              success: function(data, status, xhr) { 
+                //var results = data.result;
+                //alert(dump(data));
+                setTabValue('results', data.result);
+                setTimeout(function() { doRedirect(data.result); }, redirMillis);
+              },
+            });            
+        }
       });
+
+
+
     }
+
 
     function doRedirect(results) {
       console.log("redirecting from" + location.href + " to " + getNextSite(currentUrl, results));
